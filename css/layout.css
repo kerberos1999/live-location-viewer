@@ -1,0 +1,100 @@
+*{
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+}
+
+html{
+    font-family: Comic Sans MS;
+    color: white;
+    font-size: 20px;
+}
+
+body{
+    height: 98vh;
+    background-color: black;
+}
+
+#game{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border: 2px solid rgb(220, 220, 220);
+    border-radius: 5px;
+    height: 100%;
+    width: auto;
+    margin: 5px;
+    padding: 5px;
+    background-color: rgb(20, 20, 20);
+}
+
+#navigation{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    flex-shrink: 0;
+    margin: 5px;
+}
+
+#gamelog{
+    height: 50px;
+    width: auto;
+    border: 2px solid rgb(220, 220, 220);
+    margin: 5px 0px 5px 0px;
+    flex: 1;
+    flex-shrink: 0;
+    border-radius: 5px;
+    background:linear-gradient(0deg, rgb(20, 20, 20) 0%, black 100%);
+    font-size: 0.5rem;
+    padding: 5px;
+}
+
+.btn{
+    font-family: Comic Sans MS;
+    height: 45px;
+    border-radius: 15px;
+    background-color: rgb(175, 45, 51);
+    border:3px solid rgb(199, 36, 44);
+    transition: background-color 0.25s ease;
+    color: white;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.btn:hover{
+    background-color: rgb(236, 75, 75);
+}
+
+#map{
+    flex: 3;
+    border: 2px solid rgb(220, 220, 220);
+    margin: 5px;
+    background:linear-gradient(0deg, rgb(20, 20, 20) 0%, black 100%);
+    text-align: center;
+    border-collapse: collapse;
+}
+
+
+td{
+    overflow: hidden;
+    width: 200px;
+    transition: background-color 1s ease;
+    border: 1px solid rgb(220, 220, 220);
+}
+
+tr:last-of-type{
+    height: 5px;
+}
+
+td:last-child{
+    width: 5px;
+}
+
+p{
+    margin: 5px 0 5px 0;
+    white-space: nowrap;
+}
+
+b{
+    color: rgb(255, 255, 152);
+}
