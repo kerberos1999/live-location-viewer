@@ -69,7 +69,6 @@ body{
     flex: 3;
     border: 2px solid rgb(220, 220, 220);
     margin: 5px;
-    background:linear-gradient(0deg, rgb(20, 20, 20) 0%, black 100%);
     text-align: center;
     border-collapse: collapse;
 }

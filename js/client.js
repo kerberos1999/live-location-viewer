@@ -1,7 +1,10 @@
 
 window.onload = function(){
     map = new Map(4, 4);
+
+    var positionX;
+    var positionY;
+
+
+
 }
-
-
-
