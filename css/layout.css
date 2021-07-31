@@ -1,3 +1,10 @@
+@keyframes blink{
+    0% {opacity: 100%;}
+    50% {opacity: 75%;}
+    100% {opacity: 100%;}
+}
+
+
 *{
     box-sizing: border-box;
     margin: 0px;
@@ -5,9 +12,9 @@
 }
 
 html{
-    font-family: Comic Sans MS;
+    font-family: Consolas, Arial, Helvetica, sans-serif;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 body{
@@ -45,23 +52,29 @@ body{
     flex-shrink: 0;
     border-radius: 5px;
     background:linear-gradient(0deg, rgb(20, 20, 20) 0%, black 100%);
-    font-size: 0.5rem;
+    font-size: 0.75rem;
     padding: 5px;
 }
 
 .btn{
-    font-family: Comic Sans MS;
+    font-family: Consolas, Arial, Helvetica, sans-serif;
     height: 45px;
     border-radius: 15px;
-    background-color: rgb(175, 45, 51);
-    border:3px solid rgb(199, 36, 44);
+    background-color: rgb(199, 36, 44);
+    border:3px solid rgb(155, 18, 25);
     transition: background-color 0.25s ease;
     color: white;
     font-size: 1rem;
     white-space: nowrap;
 }
 
-.btn:hover{
+.btn:disabled{
+    background-color: hsl(357, 0%, 43%);
+    border:3px solid rgb(75, 75, 75);
+    color: rgb(200, 200, 200);
+}
+
+.btn:hover:enabled{
     background-color: rgb(236, 75, 75);
 }
 
@@ -73,20 +86,46 @@ body{
     border-collapse: collapse;
 }
 
-
-td{
-    overflow: hidden;
-    width: 200px;
-    transition: background-color 1s ease;
-    border: 1px solid rgb(220, 220, 220);
+table{
+    table-layout: fixed;
 }
 
-tr:last-of-type{
+td{
+    display: table-cell;
+    padding: 2px 15px 2px 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: auto;
+    max-width: 1px;
+    border: 1px solid rgb(220, 220, 220);
+    font-size: 0.6rem;
+}
+
+.runner{
+    background-color: rgb(255, 196, 0);
+}
+
+.hunter{
+    background-color: rgb(199, 36, 44);
+}
+
+.runner, .hunter{
+    animation: 1s blink ease infinite;
+}
+
+.runner.hunter{
+    background-color: rgb(255, 81, 0);
+}
+
+tr:last-of-type td{
     height: 5px;
+    border: none;
 }
 
 td:last-child{
     width: 5px;
+    border: none;
 }
 
 p{
