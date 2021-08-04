@@ -11,21 +11,29 @@ window.onload = function(){
         };
         conn.onmessage = function (e){
             gameLog.innerHTML += "<p>" + e.data + "</p>";
+            console.log("received message! " + e.data);
         }
     }else{
         gameLog.innerHTML += "<p><b>Your browser does not support WebSockets! Go get a better one ;^)</b></p>";
     }
     
+    players = [new Player("undefined", 0, 0), new Player("undefined", 0, 0)];
+
     conn.onopen = function (e){
-        conn.send("Der Boss ist da");
+        var request = {
+            action: 0,
+            timestamp: "",
+            positionX: players[0].positionX,
+            positionY: players[0].positionY
+        };
+        conn.send(JSON.stringify(request));
     };
 
     map = new Map(4, 4);
-    players = [new Player("runner", 2, 1), new Player("hunter", 3, 1)];
     
-    map.updatePositions();
+    map.updatePosition(0, 0, 0);
+    map.updatePosition(1, 0, 0);
 
-    players[1].positionX = 1;
-
-    map.updatePositions();
+    updateRole(0, "runner");
+    updateRole(1, "hunter");
 }

@@ -84,19 +84,16 @@ body{
     margin: 5px;
     text-align: center;
     border-collapse: collapse;
-}
-
-table{
-    table-layout: fixed;
+    user-select: none;
 }
 
 td{
-    display: table-cell;
     padding: 2px 15px 2px 5px;
     white-space: nowrap;
-    text-overflow: ellipsis;
+    text-overflow: clip;
     overflow: hidden;
     width: auto;
+    height: auto;
     max-width: 1px;
     border: 1px solid rgb(220, 220, 220);
     font-size: 0.6rem;
@@ -110,7 +107,11 @@ td{
     background-color: rgb(199, 36, 44);
 }
 
-.runner, .hunter{
+.undefined{
+    background-color: hsl(0, 0%, 30%);
+}
+
+.runner, .hunter, .undefined{
     animation: 1s blink ease infinite;
 }
 

@@ -2,7 +2,6 @@
 
 class Map{
     
-    map = [];
     table;
 
     constructor(mapWidth, mapHeight){
@@ -15,12 +14,37 @@ class Map{
         // create table
         this.table = document.getElementById("map");
 
+        // control position
+        document.addEventListener("keydown", (e) => {
+            var newPosX = players[0].positionX, newPosY = players[0].positionY;
+            switch(e.code){
+                case "ArrowUp": 
+                    newPosY--;
+                break;
+                case "ArrowRight": 
+                    newPosX++;
+                break;
+                case "ArrowDown": 
+                    newPosY++;
+                break;
+                case "ArrowLeft": 
+                    newPosX--;
+                break;
+            }
+            if(newPosX < 0) newPosX = this.mapWidth - 1;
+            if(newPosX >= this.mapWidth) newPosX = 0;
+            if(newPosY < 0) newPosY = this.mapHeight - 1;
+            if(newPosY >= this.mapHeight) newPosY = 0; 
+            this.updatePosition(0, newPosX, newPosY);
+        });
+
         var str = "";
-        const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+                          "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
         for(var i = 0; i < this.mapHeight; i++){
             str += "<tr>";
             for(var j = 0; j < this.mapWidth; j++){
-                str += "<td></td>";
+                str += "<td>⠀</td>";
                 if(j + 1 == this.mapWidth){
                     str += "<td>" + alphabet[i] + "</td>"
                 }
@@ -36,40 +60,32 @@ class Map{
             }
         }
         this.table.innerHTML = str;
-
-        // fill array
-        for(var i = 0; i < this.mapWidth; i++){
-            this.map[i] = [];
-            for(var j = 0; j < this.mapHeight; j++){
-                this.map[i][j] = -1;
-            }
-        }
     }
 
-    updatePositions(){
-        for(var index = 0; index < players.length; index++){
-            var cell = this.table.rows[players[index].positionY].cells[players[index].positionX];
-
-            // remove old position if it exists
-            for(var i = 0; i < this.mapWidth; i++){
-                for(var j = 0; j < this.mapHeight; j++){
-                    if(this.map[i][j] != -1 && this.map[i][j] == index){
-                        this.map[i][j] = -1;
-                        this.table.rows[j].cells[i].innerHTML = "";
-                        this.table.rows[j].cells[i].className = "";
-                    }
-                }
-            }
-            
-            // show updated position
-            if(players[index].positionX < this.mapWidth && players[index].positionY < 4){
-                cell.innerHTML += index == 0 ? "We ": "Them ";
-                cell.classList.add(players[index].role);
-
-                // save index to map array
-                this.map[players[index].positionX][players[index].positionY] = index;
-            }
+    updatePosition(index, positionX, positionY){
+        var cell = this.table.rows[players[index].positionY].cells[players[index].positionX];
+        
+        // remove undefined role if role is defined suddenly
+        if(players[index].role != "undefined"){
+            cell.classList.remove("undefined");
         }
+
+        // remove old position
+        cell.innerText = cell.innerText.replace(index == 0 ? "We" : "Them", "");
+        cell.classList.remove(players[index].role);
+
+        // update position
+        players[index].positionX = positionX;
+        players[index].positionY = positionY;
+
+        // show updated position
+        if(players[index].positionX < this.mapWidth && players[index].positionY < this.mapHeight &&
+           players[index].positionX >= 0 && players[index].positionY >= 0){
+            cell = this.table.rows[players[index].positionY].cells[players[index].positionX];
+            cell.innerHTML += index == 0 ? "We": "Them";
+            cell.classList.add(players[index].role);
+        }
+
     }
 
 }
