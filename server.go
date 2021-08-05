@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,11 +12,26 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// seconds to wait until server requests positions of clients
+var waitUntilRequest = 1
+
 type Request struct {
 	Action    int    `json:"action"`
 	Timestamp string `json:"timestamp"`
 	Message   string `json:"message"`
 }
+
+type Client struct {
+	conn *websocket.Conn
+	send chan []byte
+
+	Index     int    `json:"index"`
+	PositionX int    `json:"positionX"`
+	PositionY int    `json:"positionY"`
+	Role      string `json:"role"`
+}
+
+var clients map[*Client]bool = make(map[*Client]bool)
 
 const (
 	// Time allowed to write a message to the peer.
@@ -30,19 +46,6 @@ const (
 
 var timeStampStart = time.Now()
 var gameRunning = false
-
-type Client struct {
-	hub *Hub
-
-	conn *websocket.Conn
-
-	send chan []byte
-
-	Index     int    `json:"index"`
-	PositionX int    `json:"positionX"`
-	PositionY int    `json:"positionY"`
-	Role      string `json:"role"`
-}
 
 var upgrader = websocket.Upgrader{}
 
@@ -81,8 +84,15 @@ func (c *Client) write() {
 
 func (c *Client) read() {
 	defer func() {
-		c.hub.unregister <- c
 		c.conn.Close()
+		delete(clients, c)
+		// request client to delete client who left from array
+		for client := range clients {
+			timeStamp := getTimeStamp()
+			clientJson, _ := json.Marshal(c)
+			message, _ := json.Marshal(Request{1, timeStamp, string(clientJson)})
+			client.send <- message
+		}
 	}()
 	for {
 		_, message, err := c.conn.ReadMessage()
@@ -98,63 +108,74 @@ func (c *Client) read() {
 		switch request.Action {
 		case 0: // new player
 			// determine role of player
-			role := ""
-			if len(c.hub.clients) == 1 {
+			role := "undefined"
+			if len(clients) == 1 {
+				// first player is hunter
 				role = "hunter"
-			} else if len(c.hub.clients) == 2 {
-				// check which role the other client has to determine your role
-				otherRole := ""
-				for client := range c.hub.clients {
-					if client.Role != "undefined" {
-						otherRole = client.Role
+			} else if len(clients) == 2 {
+				// find out which role the other player has and determine role accordingly
+				for client := range clients {
+					if client.Role == "runner" {
+						role = "hunter"
+						break
+					} else if client.Role == "hunter" {
+						role = "runner"
 						break
 					}
 				}
-				if otherRole == "runner" {
-					role = "hunter"
-				} else {
-					role = "runner"
-				}
-			} else if len(c.hub.clients) > 2 {
-				role = "undefined"
 			}
 			c.Role = role
+
 			// save position
 			position := strings.Split(request.Message, "_")
 			c.PositionX, _ = strconv.Atoi(position[0])
 			c.PositionY, _ = strconv.Atoi(position[1])
-			client, _ := json.Marshal(c)
-			answer, _ := json.Marshal(Request{0, timeStamp, string(client)})
 
-			c.hub.broadcast <- []byte(answer)
-		case 1: // start game and return all positions
+			// send whole client array to clients
+			message, _ := json.Marshal(getClientArray())
+			answer, _ := json.Marshal(Request{0, timeStamp, string(message)})
+
+			for client := range clients {
+				client.send <- answer
+			}
+		case 1: // start game
 			timeStampStart = time.Now()
+
+			// send whole client array to clients
+			message, _ := json.Marshal(getClientArray())
+			answer, _ := json.Marshal(Request{3, timeStamp, string(message)})
+
+			for client := range clients {
+				client.send <- answer
+			}
+
 			gameRunning = true
-			var clientArray []Client
-			for client := range c.hub.clients {
-				clientArray = append(clientArray, *client)
-			}
-			message, _ := json.Marshal(clientArray)
-			answer, _ := json.Marshal(Request{2, timeStamp, string(message)})
-
-			c.hub.broadcast <- []byte(answer)
 		case 2: // close game and remove all clients
-			answer, _ := json.Marshal(Request{1, timeStamp, "Reload page to restart..."})
-			c.hub.broadcast <- []byte(answer)
-
-			for client := range c.hub.clients {
-				c.hub.unregister <- client
-			}
+			delete(clients, c)
 			gameRunning = false
 			return
-		case 3: // update positions: runner gets position of hunter and the other way around
-			for client := range c.hub.clients {
-				if client.Role == "runner" {
+		case 3: // update positions: hunter receives runner position and runner receives hunter's
+			var client Client
+			json.Unmarshal([]byte(request.Message), &client)
 
+			// send position to all clients where the index is not the same
+			answer, _ := json.Marshal(Request{5, timeStamp, request.Message})
+			for cl := range clients {
+				if client.Index != cl.Index {
+					cl.send <- answer
 				}
 			}
+
 		}
 	}
+}
+
+func getClientArray() []Client {
+	var clientArray []Client
+	for client := range clients {
+		clientArray = append(clientArray, *client)
+	}
+	return clientArray
 }
 
 func (c *Client) requestPositions() {
@@ -162,7 +183,7 @@ func (c *Client) requestPositions() {
 		if gameRunning {
 			if time.Since(timeStampStart)/1000000000 > time.Duration(waitUntilRequest) {
 				timeStamp := getTimeStamp()
-				request, _ := json.Marshal(Request{3, timeStamp, "REQUEST LOCATION"})
+				request, _ := json.Marshal(Request{4, timeStamp, "REQUEST LOCATION"})
 				timeStampStart = time.Now()
 				c.send <- request
 			}
@@ -173,12 +194,12 @@ func (c *Client) requestPositions() {
 func getTimeStamp() string {
 	timeStamp, _ := time.Parse("2006-01-02 15:04:05", time.Now().Format("2006-01-02 15:04:05"))
 	hr, min, _ := timeStamp.Clock()
-	timecode := strconv.Itoa(hr) + strconv.Itoa(min)
+	timecode := fmt.Sprintf("%02d%02d", hr, min)
 	return timecode
 }
 
-func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
-	if len(hub.clients) >= 2 {
+func serveWs(w http.ResponseWriter, r *http.Request) {
+	if len(clients) >= 2 {
 		return
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -186,16 +207,24 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	// determine index: index for a new client is greatest index in map + 1
+	index := 0
+	for client := range clients {
+		if client.Index > index {
+			index = client.Index
+			break
+		}
+	}
+
 	client := &Client{
-		hub:       hub,
 		conn:      conn,
 		send:      make(chan []byte, 256),
-		Index:     len(hub.clients),
+		Index:     index + 1,
 		Role:      "undefined",
 		PositionX: 0,
 		PositionY: 0,
 	}
-	client.hub.register <- client
+	clients[client] = true
 
 	go client.write()
 	go client.read()

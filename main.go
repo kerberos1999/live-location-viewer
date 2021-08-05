@@ -20,11 +20,9 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	hub := createHub()
-	go hub.run()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(hub, w, r)
+		serveWs(w, r)
 	})
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

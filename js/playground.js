@@ -1,6 +1,6 @@
 
 
-class Map{
+class PlayGround{
     
     table;
 
@@ -17,7 +17,9 @@ class Map{
         // control position
         document.addEventListener("keydown", (e) => {
             if(!paused){
-                var newPosX = players[playerIndex].positionX, newPosY = players[playerIndex].positionY;
+                var player = players.get(playerIndex),
+                    newPosX = player.positionX, 
+                    newPosY = player.positionY;
                 switch(e.code){
                     case "ArrowUp": 
                         newPosY--;
@@ -41,8 +43,6 @@ class Map{
         });
 
         var str = "";
-        const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-                          "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
         for(var i = 0; i < this.mapHeight; i++){
             str += "<tr>";
             for(var j = 0; j < this.mapWidth; j++){
@@ -66,27 +66,28 @@ class Map{
 
     updatePosition(index, positionX, positionY){
         if(!paused && positionX >= 0 && positionY >= 0){
-            var cell = this.table.rows[players[index].positionY].cells[players[index].positionX];
+            var player = players.get(index),
+                cell = this.table.rows[player.positionY].cells[player.positionX];
 
             // remove undefined role if role is defined suddenly
-            if(players[index].role != "undefined"){
+            if(player.role != "undefined"){
                 cell.classList.remove("undefined");
             }
 
             // remove old position
             cell.innerText = cell.innerText.replace(index == playerIndex ? "We" : "Them", "");
-            cell.classList.remove(players[index].role);
+            cell.classList.remove(player.role);
 
             // update position
-            players[index].positionX = positionX;
-            players[index].positionY = positionY;
+            player.positionX = positionX;
+            player.positionY = positionY;
 
             // show updated position
-            if(players[index].positionX < this.mapWidth && players[index].positionY < this.mapHeight &&
-            players[index].positionX >= 0 && players[index].positionY >= 0){
-                cell = this.table.rows[players[index].positionY].cells[players[index].positionX];
+            if(player.positionX < this.mapWidth && player.positionY < this.mapHeight &&
+            player.positionX >= 0 && player.positionY >= 0){
+                cell = this.table.rows[player.positionY].cells[player.positionX];
                 cell.innerHTML += index == playerIndex ? "We": "Them";
-                cell.classList.add(players[index].role);
+                cell.classList.add(player.role);
             }
         }
     }
