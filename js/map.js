@@ -65,7 +65,7 @@ class Map{
     }
 
     updatePosition(index, positionX, positionY){
-        if(positionX >= 0 && positionY >= 0){
+        if(!paused && positionX >= 0 && positionY >= 0){
             var cell = this.table.rows[players[index].positionY].cells[players[index].positionX];
 
             // remove undefined role if role is defined suddenly

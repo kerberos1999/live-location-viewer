@@ -7,6 +7,7 @@
 | 1 | normal message |
 | 2 | position update |
 | 3 | position request |
+| 4 | remove player |
 
 ## requests from client to server
 | index | description |
@@ -14,3 +15,4 @@
 | 0 | new player with role for client |
 | 1 | start game |
 | 2 | close game |
+| 3 | provide position |
