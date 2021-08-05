@@ -1,15 +1,16 @@
 # live-location-viewer
 
-## client actions
+## requests from server to client
 |   |   |
 |---|---|
-| 0 | provide position|
+| 0 | new player |
+| 1 | normal message |
+| 2 | position update |
+| 3 | position request |
+
+## requests from client to server
+|   |   |
+|---|---|
+| 0 | new player with role for client |
 | 1 | start game |
 | 2 | close game |
-
-## server actions
-|   |   |
-|---|---|
-| 0 | answer with role for client|
-| 1 | allow start game |
-| 2 | ask for position |

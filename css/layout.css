@@ -111,6 +111,18 @@ td{
     background-color: hsl(0, 0%, 30%);
 }
 
+.textrunner{
+    color: rgb(255, 196, 0);
+}
+
+.texthunter{
+    color: rgb(199, 36, 44);
+}
+
+.textundefined{
+    color: hsl(0, 0%, 30%);
+}
+
 .runner, .hunter, .undefined{
     animation: 1s blink ease infinite;
 }
@@ -132,6 +144,10 @@ td:last-child{
 p{
     margin: 5px 0 5px 0;
     white-space: nowrap;
+}
+
+#gamelog p{
+    white-space: normal;
 }
 
 b{
