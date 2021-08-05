@@ -22,7 +22,7 @@ window.onload = function(){
             startButton.disabled = true;
             closeButton.disabled = true;
             players.clear();
-            gameLog("Connection closed!");
+            gameLog("Game closed!");
         };
         conn.onmessage = function (e){
             console.log(e.data);
