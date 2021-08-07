@@ -16,6 +16,18 @@ You can change some parameters of the game to modify it.
 - seconds to wait until position request:
     - in server.go change waitUntilRequest to a value in seconds you like
 
+# features
+- when you reload the page
+    - the game is closed and you receive the same role as before
+    - you can just start the game again
+- when someone leaves
+    - you cannot start the game anymore (no 2 clients)
+    - if you wait for someone to join, starting the game will be possible again
+
+## future tasks
+- implement spectators
+- implement real GPS locations
+
 ## requests from server to client
 | index | description |
 |---|---|
