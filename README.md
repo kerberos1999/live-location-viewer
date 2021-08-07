@@ -1,4 +1,4 @@
-# live-location-viewer
+# live-location-viewer by David Fröse
 
 ## how to use
 1. start the server by executing main.go and server.go simultaneously
