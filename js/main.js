@@ -91,8 +91,8 @@ window.onload = function(){
                     var client = JSON.parse(answer.message),
                         player = players.get(playerIndex);
                     playGround.updatePosition(client.index, client.positionX, client.positionY);
-                    gameLog(answer.timestamp + " - <b class='text" + client.role + "'>" + client.role + "</b> location: " + client.positionX + alphabet[client.positionY]);
-                    gameLog(answer.timestamp + " - <b class='text" + player.role + "'>" + player.role + "</b> location: " + player.positionX + alphabet[player.positionY]);
+                    gameLog(answer.timestamp + " - <b class='text" + client.role + "'>" + client.role + "</b> location: " + (client.positionX + 1) + alphabet[client.positionY]);
+                    gameLog(answer.timestamp + " - <b class='text" + player.role + "'>" + player.role + "</b> location: " + (player.positionX + 1) + alphabet[player.positionY]);
                     gameLog(" ");
                 break;
             }
