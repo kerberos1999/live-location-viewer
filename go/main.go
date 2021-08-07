@@ -12,11 +12,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/" {
-		http.ServeFile(w, r, "index.html")
+		http.ServeFile(w, r, "../index.html")
 		return
 	}
 	// turn absolute path to local path by removing / and serve requested file
-	http.ServeFile(w, r, r.URL.Path[1:])
+	http.ServeFile(w, r, "../"+r.URL.Path[1:])
 }
 
 func main() {

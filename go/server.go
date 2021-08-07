@@ -170,6 +170,7 @@ func (c *Client) read() {
 	}
 }
 
+// returns clients in array form
 func getClientArray() []Client {
 	var clientArray []Client
 	for client := range clients {
@@ -178,6 +179,7 @@ func getClientArray() []Client {
 	return clientArray
 }
 
+// routine which requests the position in a timespan
 func (c *Client) requestPositions() {
 	for {
 		if gameRunning {
@@ -191,6 +193,7 @@ func (c *Client) requestPositions() {
 	}
 }
 
+// returns the current timespan in HourMinutes
 func getTimeStamp() string {
 	timeStamp, _ := time.Parse("2006-01-02 15:04:05", time.Now().Format("2006-01-02 15:04:05"))
 	hr, min, _ := timeStamp.Clock()
@@ -198,7 +201,9 @@ func getTimeStamp() string {
 	return timecode
 }
 
+// creates a new client and upgrades the connection to websocket connection
 func serveWs(w http.ResponseWriter, r *http.Request) {
+	// this is optional (if there are more than two clients they will be just disconnected right now):
 	if len(clients) >= 2 {
 		return
 	}
